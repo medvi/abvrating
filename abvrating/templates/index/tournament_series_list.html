@@ -1,0 +1,23 @@
+{% extends 'index/ts_list_base.html' %}
+{% load static %}
+
+{% block title %}
+Серии турниров
+{% endblock %}
+
+{% block item_content %}
+	<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}" 
+	   class="nav-link text-center">
+		<h5>{{ ts.title }}</h5>
+	</a>
+	<img src="{% static "index/img/test_avatar_ts.jpg" %}" 
+		 class="col-md-12" style="height: 150px; padding: 0px;">
+	<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}" 
+	   class="nav-link text-center">
+		Подробнее
+	</a>
+	<a href="{% url 'ts_rating_detail' ts_rating_id=ts.pk %}" 
+	   class="nav-link text-center">
+		Рейтинг
+	</a>
+{% endblock %}

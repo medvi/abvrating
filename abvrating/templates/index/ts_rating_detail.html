@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Рейтинг 
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
+	<div class="col-md-12">
+    	<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">№</th>
+					<th scope="col">Участник</th>
+					<th scope="col">Рейтинг</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for ur in users_rating %}
+					<tr>
+						<th scope="row">{{ forloop.counter }}</th>
+						<td>{{ ur.participant }}</td>
+						<td>{{ ur.rating }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

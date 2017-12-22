@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-md-12 row row-eq-height" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
+	{% for ts in tseries %}
+		<div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2" 
+			 style="margin: 0px 0px 20px 0px">
+          	<div class=" border rounded-bottom" 
+				 style="margin: 0px 5px 0px 0px; padding: 0px;">
+				{% block item_content %}
+				{% endblock %}
+			</div>
+  		</div>
+	{% endfor %}
+
+	<ul class="pagination justify-content-end" style="margin: 0px 0px 0px 15px;">
+		{% if tseries.has_previous %}
+			<li class="page-item">
+				<a class="page-link" tabindex="-1"
+				   href="?page={{ tseries.previous_page_number }}">
+					Назад
+				</a>
+			</li>
+		{% endif %}
+
+		{% if tseries.number > 4 %}
+			<li class="page-item">
+				<a class="page-link" 
+				   href="?page={{ tseries.number|add:"-4" }}">
+					...
+				</a>
+			</li>
+		{% endif %}
+		
+		{% for np in num_pages %}
+			{% if np <= tseries.number|add:"3" %}
+				{% if np >= tseries.number|add:"-3" %}
+					<li class="page-item
+						{% if np == tseries.number %} active {% endif %}">
+						<a class="page-link" href="?page={{ np }}">{{ np }}</a>
+					</li>
+				{% endif %}
+			{%  endif %}
+		{% endfor %}
+
+
+		{% if tseries.number <= tseries.paginator.num_pages|add:"-4" %}
+			<li class="page-item">
+				<a class="page-link" 
+				   href="?page={{ tseries.number|add:"4" }}">
+					...
+				</a>
+			</li>
+		{% endif %}
+
+		{% if tseries.has_next %}
+			<li class="page-item">
+				<a class="page-link" tabindex="-1"
+				   href="?page={{ tseries.next_page_number }}">
+					Вперед
+				</a>
+			</li>
+		{% endif %}
+	</ul>
+
+</div>
+{% endblock %}

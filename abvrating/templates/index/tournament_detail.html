@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Турнир 
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
+	<div class="offset-2 col-8">
+		<p>
+			Турнир № {{ tournament.serial_number  }} -
+			серия турниров "{{ tournament.tournament_series.title }}"
+		</p>
+		<p>
+			Приоритет: 
+			{{ tournament.priority }}
+		</p>
+		<p>
+			Дата начала турнира: 
+			{{ tournament.tournament_start_date }}
+		</p>
+		<p>
+			Дата окончания турнира: 
+			{{ tournament.tournament_end_date }}
+		</p>
+	</div>
+</div>
+{% endblock %}
