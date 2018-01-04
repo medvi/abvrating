@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+Регистрация
+{% endblock %}
+
+{% block content %}
+<div class="col-12" 
+	 style="margin-top: 40px;">
+
+	<form method="post" action="." class="row justify-content-center">
+		{% csrf_token %}
+		<div class="col-4 card" style="padding: 0px;">
+			<div class="card-header">
+				<h5>Регистрация: шаг 3</h5>
+			</div>
+			<div class="card-body">
+				{{ form.as_p }}
+			</div>
+			<input type="submit" class="btn btn-lg btn-primary btn-block" 
+				   value="Завершить регистрацию">
+		</div>
+	</form>
+</div>
+{% endblock %}

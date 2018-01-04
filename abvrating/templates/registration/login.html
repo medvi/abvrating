@@ -23,7 +23,7 @@
 		</div>
 	{% endif %}
 
-	<form method="post" action="{% url 'login'%}" class="form-signin">
+	<form method="post" action="{% url 'login'%}">
 		{% csrf_token %}
 		<label for="username" class="sr-only">Логин</label>
 		<input type="text" id="username" name="username" class="form-control" 

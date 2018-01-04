@@ -35,6 +35,11 @@
 									Турниры
 								</a>
 							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'my_ts_list' %}">
+									Мои турниры
+								</a>
+							</li>
 						</ul>
 						<ul class="navbar-nav">
 							{% if user.is_authenticated %}
@@ -48,7 +53,13 @@
 								</li>
 							{% else %}
 								<li class="nav-item">
-									<a class="nav-link" href="{% url 'login' %}">Войти</a>
+									<a class="nav-link" 
+									   href="{% url 'register_step1' %}">
+										Регистрация
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{% url 'login' %}">Вход</a>
 								</li>
 							{% endif %}
 						</ul>

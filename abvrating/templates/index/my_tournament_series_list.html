@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Мои турниры
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12 row row-eq-height" 
+	 style="
+		margin: 50px 0px 0px 0px; 
+		display: -webkit-box; 
+		display: -webkit-flex; 
+		display: -ms-flexbox; 
+		display: flex;"
+>
+<div class="col-2 bd-sidebar">
+	<nav id="ts_list" class="navbar navbar-light bg-light">
+		<nav class="nav nav-pills flex-column">
+			<a class="nav-link" href="#played_ts">
+				Участие
+			</a>
+			<a class="nav-link" href="#created_ts">
+				Организация
+			</a>
+		</nav>
+	</nav>
+</div>
+
+<div class="row col-10" data-spy="scroll" data-target="#ts_list" data-offset="0">
+	<div class="col-12 row" id="played_ts">
+		<div class="col-12 alert alert-primary" role="alert">
+			Серии турниров, в которых я участвую
+		</div>
+	{% for ts in played_ts %}
+		<div class="card-group col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4"
+			 style="margin: 0px 0px 20px 0px">
+			<div class="card">
+				<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}" 
+				   class="card-header nav-link text-center"
+				   style="padding: 0.25rem 0.5rem">
+					<h5>
+						{{ ts.title }}
+					</h5>
+				</a>
+				<img src="{% static "index/img/test_avatar_ts.jpg" %}" 
+					 class="card-img-top img-fluid">
+				<div class="card-body">
+					<div class="alert alert-secondary" role="alert">
+						Организация: 
+						{{ ts.organization.organization_name }}
+					</div>
+					<div class="alert alert-secondary" role="alert">
+						Даты проведения:<br> 
+						{{ ts.ts_start_date }} - {{ ts.ts_end_date }}
+					</div>
+				</div>
+				<div class="row card-footer" 
+					 style="padding: 10px 5px; margin-left: 0px; margin-right: 0px">
+					<div class="col-6">
+						<small class="text-muted">
+							<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}">
+								Подробнее
+							</a>
+						</small>
+					</div>
+					<div class="col-6 text-right">
+						<small class="text-muted">
+							<a href="{% url 'ts_rating_detail' ts_rating_id=ts.pk %}">
+								Рейтинг
+							</a>
+						</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+
+	<div class="col-12 row" id="created_ts">
+		<div class="col-12 alert alert-primary" role="alert">
+			Серии турниров, которые мы организовываем
+		</div>
+	{% for ts in created_ts %}
+		<div class="card-group col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4"
+			 style="margin: 0px 0px 20px 0px">
+			<div class="card">
+				<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}" 
+				   class="card-header nav-link text-center"
+				   style="padding: 0.25rem 0.5rem">
+					<h5>
+						{{ ts.title }}
+					</h5>
+				</a>
+				<img src="{% static "index/img/test_avatar_ts.jpg" %}" 
+					 class="card-img-top img-fluid">
+				<div class="card-body">
+					<div class="alert alert-secondary" role="alert">
+						Организация: 
+						{{ ts.organization.organization_name }}
+					</div>
+					<div class="alert alert-secondary" role="alert">
+						Даты проведения:<br> 
+						{{ ts.ts_start_date }} - {{ ts.ts_end_date }}
+					</div>
+				</div>
+				<div class="row card-footer" 
+					 style="padding: 10px 5px; margin-left: 0px; margin-right: 0px">
+					<div class="col-6">
+						<small class="text-muted">
+							<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}">
+								Подробнее
+							</a>
+						</small>
+					</div>
+					<div class="col-6 text-right">
+						<small class="text-muted">
+							<a href="{% url 'ts_rating_detail' ts_rating_id=ts.pk %}">
+								Рейтинг
+							</a>
+						</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</div>
+{% endblock %}

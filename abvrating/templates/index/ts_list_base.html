@@ -4,14 +4,13 @@
 {% block content %}
 <div class="col-md-12 row row-eq-height" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
 	{% for ts in tseries %}
-		<div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2" 
+		<div class="card-group col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3"
 			 style="margin: 0px 0px 20px 0px">
-          	<div class=" border rounded-bottom" 
-				 style="margin: 0px 5px 0px 0px; padding: 0px;">
+			<div class="card">
 				{% block item_content %}
 				{% endblock %}
 			</div>
-  		</div>
+		</div>
 	{% endfor %}
 
 	<ul class="pagination justify-content-end" style="margin: 0px 0px 0px 15px;">

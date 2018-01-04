@@ -8,11 +8,11 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'abvrating.settings'
 django.setup()
 
 from django.contrib.auth.models import User
-from index.models import Participants
-from index.models import Organizations 
-from index.models import Organizators 
+from index.models import Participant
+from index.models import Organization 
+from index.models import Organizator 
 from index.models import TournamentSeries
-from index.models import Tournaments
+from index.models import Tournament
 from index.models import UsersRating
 
 User.objects.exclude(username='dmedvedev').delete()

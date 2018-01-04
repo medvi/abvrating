@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+Регистрация
+{% endblock %}
+
+{% block content %}
+<div class="col-12" 
+	 style="margin-top: 40px;">
+
+	<form method="post" action="." class="row justify-content-center">
+		{% csrf_token %}
+		<div class="col-4 card" style="padding: 0px;">
+			<div class="card-header">
+				<h5>Регистрация: шаг 2</h5>
+			</div>
+			<div class="card-body">
+			{% for field in form %}
+				<div class="form-row">	
+					{% if field is form.status %}
+					<select class="custom-select col-12" id="{{ field.id_for_label}}"
+							name="{{ field.html_name }}" style="margin-top: 10px">
+						<option value="1">Участник</option>
+						<option value="2">Организатор</option>
+					</select>
+					{% elif field is form.sex %}
+					<select class="custom-select col-12" id="{{ field.id_for_label}}"
+							name="{{ field.html_name }}" style="margin-top: 10px">
+						<option value="W">Девушка</option>
+						<option value="M">Юноша</option>
+					</select>
+					{% else %}
+					<input type="text" name="{{ field.html_name }}" 
+						   placeholder="{{ field.label}}" 
+						   class="form-control 
+								  {% if field.errors %}is-invalid{% endif %}" 
+						   required="" id="{{ field.id_for_label }}"
+						   style="margin-top: 10px">
+					{% endif %}
+					{% if field.errors %}
+						{% for error in field.errors %}
+						<div class="invalid-feedback">
+							{{ error }}
+						</div>
+						{% endfor %}
+					{% endif %}
+				</div>
+			{% endfor %}
+			</div>
+			<input type="submit" class="btn btn-lg btn-primary btn-block" 
+				   value="Завершить">
+		</div>
+	</form>
+</div>
+{% endblock %}

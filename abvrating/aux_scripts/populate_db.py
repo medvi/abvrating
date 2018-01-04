@@ -136,11 +136,12 @@ def populate_organizators(partitions=10000):
 
 		o1 = Organizator(
 			user_id=users[id1]['id'],
-			organization_id=organizations[i]['id']
+			organization_id=organizations[i]['id'],
+			participant_id=participants[i]['id'],
 		)
 		o2 = Organizator(
 			user_id=users[id2]['id'],
-			organization_id=organizations[i]['id']
+			organization_id=organizations[i]['id'],
 		)
 		organizators.extend([o1, o2])
 

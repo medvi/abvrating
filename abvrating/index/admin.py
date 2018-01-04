@@ -20,7 +20,7 @@ class OrganizationsAdmin(admin.ModelAdmin):
 
 @admin.register(Organizator)
 class OrganizatorsAdmin(admin.ModelAdmin):
-	list_display = ('user', 'organization')
+	list_display = ('user', 'organization', 'participant')
 
 
 @admin.register(TournamentSeries)
