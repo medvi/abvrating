@@ -31,6 +31,20 @@ def tournament_series_list(request):
 
 
 def my_tournament_series_list(request):
+	form = TournamentSeriesForm(request.POST or None, user=request.user)
+
+	if request.method == 'POST':
+		if form.is_valid():
+			ts = TournamentSeries.objects.create(
+				title=form.cleaned_data['title'],
+				description=form.cleaned_data['description'],
+				organization=form.cleaned_data['organization'],
+				ts_start_date=form.cleaned_data['ts_start_date'],
+				ts_end_date=form.cleaned_data['ts_end_date'],
+			)
+
+			return HttpResponseRedirect('/my_ts/')
+
 	played_ts = TournamentSeries.objects.filter(
 		participants__user__username=request.user.username,
 	)
@@ -40,15 +54,25 @@ def my_tournament_series_list(request):
 	)
 
 	context = {
-		"played_ts": played_ts,
-		"created_ts": created_ts,
+		"ts_dict": [{
+				"ts": created_ts,
+				"type": "created",
+				"label": "Серии турниров, которые мы организуем"
+			},
+			{
+				"ts": played_ts,
+				"type": "played",
+				"label": "Серии турниров, в которых я участвую"
+			}],
+		"form": form,
 	}
 
 	return render(request, 'index/my_tournament_series_list.html', context)
 
 
 def tournament_series_detail(request, tournament_series_id):
-	tournaments_list = Tournament.objects.filter(tournament_series_id=tournament_series_id)
+	tournaments_list = \
+		Tournament.objects.filter(tournament_series_id=tournament_series_id)
 
 	context = {
 		'tournaments': tournaments_list,

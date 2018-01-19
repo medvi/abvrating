@@ -114,7 +114,7 @@ class TournamentSeries(models.Model):
 		verbose_name='Описание'
 	)
 
-	organization= models.ForeignKey(
+	organization = models.ForeignKey(
 		Organization, on_delete=models.CASCADE, 
 		verbose_name='Организация'
 	)
@@ -136,6 +136,17 @@ class TournamentSeries(models.Model):
 		verbose_name='Дата окончания серии'
 	)
 
+	icon = models.ImageField(
+		upload_to='uploads',
+		blank=True, null=True,
+		db_column='Icon',
+		default='uploads/ts_default_icon.jpg',
+		verbose_name='Иконка турнира'
+	)
+
+	def user_directory_path(instance, filename):
+		return 'user_{0}/{1}'.format(instance.user.id, filename)
+
 	def __str__(self):
 		return "{0}".format(self.title)
 
@@ -148,6 +159,7 @@ class TournamentSeries(models.Model):
 class Tournament(models.Model):
 	tournament_series = models.ForeignKey(
 		TournamentSeries, on_delete=models.CASCADE, 
+		related_name='tournaments',
 		verbose_name='Серия турнира'
 	)
 
@@ -172,6 +184,16 @@ class Tournament(models.Model):
 		db_column='TournamentEndDate', 
 		verbose_name='Дата окончания турнира'
 	)
+
+	icon = models.ImageField(
+		upload_to='uploads',
+		blank=True, null=True,
+		db_column='Icon',
+		verbose_name='Иконка турнира'
+	)
+
+	def user_directory_path(instance, filename):
+		return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 	class Meta:
 		db_table = 'Tournaments'

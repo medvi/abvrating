@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
 from index.models import *
 
-NAME_ERROR_LIST = {
+USER_CREATION_ERRORS = {
 	"username": {
 		'required': "Обязательно для заполнения",
 		'min_length': 3,
@@ -27,6 +27,14 @@ NAME_ERROR_LIST = {
 	}
 }
 
+TOURNAMENT_SERIES_ERRORS = {
+	"icon": {
+		"invalid": "ошибка1",
+		"missing": "ошибка2",
+		"empty": "ошибка3",
+		"invalid_image": "ошибка4",
+	}
+}
 
 STATUS_CHOICES = (
 	('1', "participant"),
@@ -37,7 +45,7 @@ STATUS_CHOICES = (
 class UserCreationForm(forms.Form):
 	username = forms.CharField(
 		label='Логин', max_length=30, 
-		error_messages=NAME_ERROR_LIST,
+		error_messages=USER_CREATION_ERRORS,
 		help_text='Должно быть уникальным',
 	)
 	email = forms.EmailField(
@@ -46,13 +54,13 @@ class UserCreationForm(forms.Form):
 	password1 = forms.CharField(
 		label='Пароль',
 		widget=forms.PasswordInput(),
-		error_messages= NAME_ERROR_LIST,
+		error_messages=USER_CREATION_ERRORS,
 		help_text='Должен быть не очевидным',
 	)
 	password2 = forms.CharField(
 		label='Повторить пароль',
 		widget=forms.PasswordInput(),
-		error_messages=NAME_ERROR_LIST,
+		error_messages=USER_CREATION_ERRORS,
 		help_text='Должен совпасть с полем "Пароль"',
 	)
 
@@ -97,12 +105,12 @@ class ParticipantCreationForm(forms.Form):
 	sex = forms.ChoiceField(
 		choices=SEX_CHOICES, label='Пол', initial='',
 		widget=forms.RadioSelect(), required=True,
-		error_messages=NAME_ERROR_LIST 
+		error_messages=USER_CREATION_ERRORS
 	)
 	status = forms.ChoiceField(
 		choices=STATUS_CHOICES, label="Статус", initial='',
 		widget=forms.RadioSelect(), required=True,
-		error_messages=NAME_ERROR_LIST
+		error_messages=USER_CREATION_ERRORS
 	)
 
 
@@ -114,3 +122,50 @@ class OrganizatorCreationForm(forms.ModelForm):
 	class Meta:
 		model = Organizator
 		fields = ('organization', )
+
+
+class TournamentSeriesForm(forms.ModelForm):
+	title = forms.CharField(
+		label='Название', max_length=50,
+	)
+	description = forms.CharField(
+		label='Описание', widget=forms.Textarea
+	)
+	organization = forms.ModelChoiceField(
+		label='Организация', queryset=None,
+	)
+	ts_start_date = forms.DateField(
+		widget=AdminDateWidget,
+		label='Дата начало серии (дд.мм.гггг)',
+		input_formats=[
+			'%Y-%m-%d',
+			'%m/%d/%Y',
+			'%m/%d/%Y',
+			'%d.%m.%Y'
+		] 
+	)
+	ts_end_date = forms.DateField(
+		widget=AdminDateWidget,
+		label='Дата окончания серии (дд.мм.гггг)',
+		input_formats=[
+			'%Y-%m-%d',
+			'%m/%d/%Y',
+			'%m/%d/%Y',
+			'%d.%m.%Y'
+		] 
+	)
+
+	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user', None)
+		super(TournamentSeriesForm,  self).__init__(*args, **kwargs)
+		self.fields['organization'].queryset = \
+			Organization.objects.filter(
+				users__username=user.username
+			)
+
+	class Meta:	
+		model = TournamentSeries
+		fields = (
+			'title', 'description', 'organization', 
+			'ts_start_date', 'ts_end_date',
+		)

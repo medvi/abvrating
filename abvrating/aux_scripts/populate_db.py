@@ -167,12 +167,14 @@ def populate_tournament_series(partitions=10000):
 
 	tournament_series = []
 	for i in range(args.count):
+		rand_icon = random.randint(1, 3)
 		ts = TournamentSeries(
 			title='Tournament series title {0}'.format(i),
 			description=create_description(),
-			organization_id = organizations[i]['id'],
-			ts_start_date = now.strftime("%Y-%m-%d"),
-			ts_end_date = (now+datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+			organization_id=organizations[i]['id'],
+			ts_start_date=now.strftime("%Y-%m-%d"),
+			ts_end_date=(now+datetime.timedelta(days=10)).strftime("%Y-%m-%d"),
+			icon='uploads/image'+str(random.randint(1, 3))+'.jpg',
 		)
 		tournament_series.append(ts)
 
@@ -186,12 +188,14 @@ def populate_tournaments(partitions=10000):
 
 	tournaments = []
 	for i in range(args.tournaments*args.count):
+		rand_icon = random.randint(1, 3)
 		t = Tournament(
 			tournament_series_id = tournament_series[i%args.count]['id'],
 			serial_number = int(i/args.count)+1,
 			priority = i,
 			tournament_start_date = now.strftime("%Y-%m-%d"),
-			tournament_end_date = (now+datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+			tournament_end_date = (now+datetime.timedelta(days=10)).strftime("%Y-%m-%d"),
+			icon='uploads/image'+str(random.randint(1, 3))+'.jpg',
 		)
 		tournaments.append(t)
 
@@ -201,9 +205,15 @@ def populate_tournaments(partitions=10000):
 def populate_users_rating(partitions=10000):
 	users_rating = []
 	for j in range(args.count):
+		repeated_id = []
 		for i in range(args.participants):
+			new_id = random.randint(0, args.count-1)
+			while (new_id in repeated_id):
+				new_id = random.randint(0, args.count-1)
+			repeated_id.append(new_id)
+
 			ur = UsersRating(
-				participant_id = participants[random.randint(0, args.count-1)]['id'],
+				participant_id = participants[new_id]['id'],
 				tournament_series_id = tournament_series[j]['id'],
 				rating = random.randint(1, 100)
 			)
