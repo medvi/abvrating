@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Мои турниры
+{% endblock %}
+
+{% block content %}
+<div class="col-2" style="margin-top: 50px;">
+	<a href="{% url 'my_ts_list' %}" class="text-left">Вернуться</a>
+</div>
+<div class="col-9 row" 
+	 style="margin-top: 40px;">
+	<form method="post" action="{% url 'ts_edit' ts_id=ts.id %}"
+		  class="row col-12" enctype="multipart/form-data" id="update_ts_form">
+	{% csrf_token %}
+
+		<div class="col-8">
+		{% with title=form.title description=form.description organization=form.organization ts_start_date=form.ts_start_date ts_end_date=form.ts_end_date %}
+			<input type="{{ title.field.widget.input_type }}" 
+				   name="{{ title.html_name }}" 
+				   placeholder="{{ title.label }}" 
+				   class="form-control 
+						  {% if title.errors %}is-invalid{% endif %}" 
+				   required="" id="{{ title.id_for_label }}"
+				   style="margin-top: 10px"
+				   value="{{ title.value }}">
+		{% for error in title.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<textarea form="update_ts_form" name="{{ description.html_name }}" 
+					  placeholder="{{ description.label }}"
+					  class="form-control
+							 {% if description.errors %}is-invalid{% endif %}" 
+					  required="" id="{{ description.id_for_label }}"
+					  style="margin-top: 10px; font-size: 12px; height: 100px;"
+					  value="{{ description.value }}"
+			>{{ description.value }}</textarea>
+		{% for error in description.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<div class="form-control {% if organization.errors %}is-invalid{% endif %}" 
+				 style="margin-top: 10px">
+				<label for="{{ organization.id_for_label }}">
+					{{ organization.label }}: 
+				</label>
+				<select id="{{ organization.id_for_label }}" 
+						form="update_ts_form"
+						name="{{ organization.html_name }}" required>
+				{% for choice in organization.field.choices %}
+					<option value="{{ choice.0 }}"
+						{% if organization.value == choice.0  %}
+							selected
+						{% endif %}
+							>
+						{{ choice.1 }}
+					</option>
+				{% endfor %}
+				</select>
+			</div>
+		{% for error in organization.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<input type="{{ ts_start_date.field.widget.input_type }}" 
+				   name="{{ ts_start_date.html_name }}" 
+				   placeholder="{{ ts_start_date.label }}" 
+				   class="form-control 
+						  {% if ts_start_date.errors %}is-invalid{% endif %}" 
+				   required="" id="{{ ts_start_date.id_for_label }}"
+				   style="margin-top: 10px"
+				   value="{{ ts_start_date.value|date:"d.m.Y" }}">
+		{% for error in ts_start_date.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<input type="{{ ts_end_date.field.widget.input_type }}" 
+				   name="{{ ts_end_date.html_name }}" 
+				   placeholder="{{ ts_end_date.label }}" 
+				   class="form-control 
+						  {% if ts_end_date.errors %}is-invalid{% endif %}" 
+				   required="" id="{{ ts_end_date.id_for_label }}"
+				   style="margin-top: 10px"
+				   value="{{ ts_end_date.value|date:"d.m.Y" }}">
+		{% for error in ts_end_date.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<div class="text-center" style="margin-top: 10px">
+				<input type="submit" class="btn btn-primary col-12" 
+					   value="Обновить"/>
+			</div>
+		</div>
+		{% endwith %}
+		<div class="col-4" style="margin-top: 10px;">
+			<div class="col-12 border border-primary" style="padding: 0px">
+				<img src="
+						{% if ts.icon %}
+							{{ ts.icon.url }}
+						{% else %}
+							/media/uploads/ts_default_icon.jpg
+						{% endif %}" 
+					 style="width: 100%;"
+					 class="" id="icon_img">
+				</img>
+				<small>
+				<input type="file" accept="image/png, image/jpeg, image/gif" 
+					   name="icon" id="icon_input" 
+					   class="form-control-file border-0"/>
+				</small>
+		{% for error in form.icon.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			</div>
+		</div>
+
+	</form>
+</div>
+
+<script>
+function getCookie(c_name) {
+	if (document.cookie.length > 0) {
+		c_start = document.cookie.indexOf(c_name + "=");
+		if (c_start != -1) {
+			c_start = c_start + c_name.length + 1;
+			c_end = document.cookie.indexOf(";", c_start);
+			if (c_end == -1) c_end = document.cookie.length;
+			return unescape(document.cookie.substring(c_start,c_end));
+		}
+	}
+	return "";
+}
+
+$("#icon_input").change(function uploadImagePreview(e) {
+	var blobFile = e.target.files[0];
+	console.log(blobFile.name);
+	var formData = new FormData();
+	formData.append("icon", blobFile);
+
+	$.ajaxSetup({
+		headers: { "X-CSRFToken": getCookie("csrftoken") },
+	});
+
+	$.ajax({
+		url: "{% url 'ts_edit' ts_id=ts.id %}",
+		type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(response) {
+			console.log(blobFile);
+			$("#icon_img").attr('src', "/media/uploads/" + blobFile.name);
+		},
+		error: function(jqXHR, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+});
+</script>
+
+{% endblock %}

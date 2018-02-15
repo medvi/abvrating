@@ -29,6 +29,7 @@ USER_CREATION_ERRORS = {
 
 TOURNAMENT_SERIES_ERRORS = {
 	"icon": {
+		"required": "ошибка0",
 		"invalid": "ошибка1",
 		"missing": "ошибка2",
 		"empty": "ошибка3",
@@ -48,15 +49,18 @@ class UserCreationForm(forms.Form):
 		error_messages=USER_CREATION_ERRORS,
 		help_text='Должно быть уникальным',
 	)
+
 	email = forms.EmailField(
 		label='Электронный адрес'
 	)
+
 	password1 = forms.CharField(
 		label='Пароль',
 		widget=forms.PasswordInput(),
 		error_messages=USER_CREATION_ERRORS,
 		help_text='Должен быть не очевидным',
 	)
+
 	password2 = forms.CharField(
 		label='Повторить пароль',
 		widget=forms.PasswordInput(),
@@ -86,12 +90,15 @@ class ParticipantCreationForm(forms.Form):
 	name = forms.CharField(
 		label='Имя', max_length=30, 
 	)
+
 	second_name = forms.CharField(
 		label='Отчество', max_length=50, 
 	)
+
 	surname = forms.CharField(
 		label='Фамилия', max_length=50, 
 	)
+
 	birthday = forms.DateField(
 		widget = AdminDateWidget,
 		label='Дата рождения (дд.мм.гггг)',
@@ -107,6 +114,7 @@ class ParticipantCreationForm(forms.Form):
 		widget=forms.RadioSelect(), required=True,
 		error_messages=USER_CREATION_ERRORS
 	)
+
 	status = forms.ChoiceField(
 		choices=STATUS_CHOICES, label="Статус", initial='',
 		widget=forms.RadioSelect(), required=True,
@@ -128,12 +136,15 @@ class TournamentSeriesForm(forms.ModelForm):
 	title = forms.CharField(
 		label='Название', max_length=50,
 	)
+
 	description = forms.CharField(
 		label='Описание', widget=forms.Textarea
 	)
+
 	organization = forms.ModelChoiceField(
 		label='Организация', queryset=None,
 	)
+
 	ts_start_date = forms.DateField(
 		widget=AdminDateWidget,
 		label='Дата начало серии (дд.мм.гггг)',
@@ -144,6 +155,7 @@ class TournamentSeriesForm(forms.ModelForm):
 			'%d.%m.%Y'
 		] 
 	)
+
 	ts_end_date = forms.DateField(
 		widget=AdminDateWidget,
 		label='Дата окончания серии (дд.мм.гггг)',
@@ -153,6 +165,11 @@ class TournamentSeriesForm(forms.ModelForm):
 			'%m/%d/%Y',
 			'%d.%m.%Y'
 		] 
+	)
+
+	icon = forms.ImageField(
+		label='Иконка',
+		required=False
 	)
 
 	def __init__(self, *args, **kwargs):
@@ -167,5 +184,5 @@ class TournamentSeriesForm(forms.ModelForm):
 		model = TournamentSeries
 		fields = (
 			'title', 'description', 'organization', 
-			'ts_start_date', 'ts_end_date',
+			'ts_start_date', 'ts_end_date', 'icon',
 		)

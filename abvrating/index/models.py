@@ -141,7 +141,7 @@ class TournamentSeries(models.Model):
 		blank=True, null=True,
 		db_column='Icon',
 		default='uploads/ts_default_icon.jpg',
-		verbose_name='Иконка турнира'
+		verbose_name='Иконка серии турниров'
 	)
 
 	def user_directory_path(instance, filename):

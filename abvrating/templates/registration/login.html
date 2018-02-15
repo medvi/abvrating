@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="col-12 row justify-content-center" 
-	 style="width: 200px; margin-top: 40px;">
+	 style="margin-top: 40px;">
 
 	{% if next %}
 	    {% if user.is_authenticated %}
@@ -23,7 +23,7 @@
 		</div>
 	{% endif %}
 
-	<form method="post" action="{% url 'login'%}">
+	<form method="post" action="{% url 'login' %}" class="col-4">
 		{% csrf_token %}
 		<label for="username" class="sr-only">Логин</label>
 		<input type="text" id="username" name="username" class="form-control" 

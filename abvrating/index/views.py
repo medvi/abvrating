@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.views import login
 from django.http import HttpResponseRedirect
@@ -31,7 +31,11 @@ def tournament_series_list(request):
 
 
 def my_tournament_series_list(request):
-	form = TournamentSeriesForm(request.POST or None, user=request.user)
+	form = TournamentSeriesForm(
+		request.POST or None,
+		request.FILES or None,
+		user=request.user
+	)
 
 	if request.method == 'POST':
 		if form.is_valid():
@@ -41,6 +45,7 @@ def my_tournament_series_list(request):
 				organization=form.cleaned_data['organization'],
 				ts_start_date=form.cleaned_data['ts_start_date'],
 				ts_end_date=form.cleaned_data['ts_end_date'],
+				icon=form.cleaned_data['icon'],
 			)
 
 			return HttpResponseRedirect('/my_ts/')
@@ -68,6 +73,43 @@ def my_tournament_series_list(request):
 	}
 
 	return render(request, 'index/my_tournament_series_list.html', context)
+
+
+def ts_edit(request, ts_id):
+	updated_ts = get_object_or_404(TournamentSeries, id=ts_id)
+
+	form = TournamentSeriesForm(
+		request.POST or None, 
+		request.FILES or None,
+		instance=updated_ts,
+		user=request.user
+	)
+
+	if request.method == 'POST':
+		if form.is_valid():
+			updated_ts.icon = form.cleaned_data['icon']
+			updated_ts.save();
+			return HttpResponseRedirect('/my_ts/')
+
+	context = {
+		"form": form,
+		"ts": updated_ts,
+	}
+
+	return render(request, 'index/ts_edit.html', context)
+
+
+def ts_delete(request, ts_id):
+	deleted_ts = get_object_or_404(TournamentSeries, id=ts_id)    
+
+	if request.method=='POST':
+		deleted_ts.delete()
+		return HttpResponseRedirect('/my_ts/')
+
+	context = {
+	}
+
+	return render(request, 'index/ts_delete', context)
 
 
 def tournament_series_detail(request, tournament_series_id):
