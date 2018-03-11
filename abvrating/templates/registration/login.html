@@ -8,18 +8,22 @@
 <div class="col-12 row justify-content-center" 
 	 style="margin-top: 40px;">
 
-	{% if next %}
-	    {% if user.is_authenticated %}
-			<p>Ваш аккаунт не имеет доступ к этой странице.</p>
-	    {% else %}
-		    <p>Войдите на сайт для просмотра страницы.</p>
-	    {% endif %}
-	{% endif %}
+{% if next %}
+{% if user.is_authenticated %}
+	<div class="col-12 text-center alert alert-danger">
+		Ваш аккаунт не имеет доступ к этой странице.
+	</div>
+{% else %}
+    <div class="col-12 text-center alert alert-danger">
+		Войдите на сайт для просмотра страницы.
+	</div>
+{% endif %}
+{% endif %}
 
 	{% if form.errors %}
 		<div class="col-12 row justify-content-center alert alert-danger"
 			>
-			<p>Введен неверный логин или пароль. Попробуйте еще раз.</p>
+			Введен неверный логин или пароль. Попробуйте еще раз.
 		</div>
 	{% endif %}
 

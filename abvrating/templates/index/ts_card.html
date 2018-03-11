@@ -72,6 +72,7 @@
 			</a>
 		</div>
 		<div class="col-2" style="padding: 2px">
+		{% if dict.type == "created" %}
 			<span>
 				<a class="btn btn-link btn-sm" 
 				   href="{% url 'ts_edit' ts_id=ts.id %}"
@@ -80,14 +81,17 @@
 					<i class="fa fa-cogs"></i>
 				</a>
 			</span>
+		{% endif %}
 		</div>
 		<div class="col-2 offset-4" style="padding: 2px">
+		{% if dict.type == "created" %}
 			<button type="button" class="btn btn-link btn-sm"
 					data-toggle="tooltip" data-placement="bottom" 
 					title="Удалить">
 					<i class="fa fa-trash" data-toggle="modal" 
 					   data-target="#are_you_sure_modal_{{ ts.id }}"></i>
 			</button>
+		{% endif %}
 		</div>
 	</div>
 	<div class="modal fade" id="are_you_sure_modal_{{ ts.id }}" 

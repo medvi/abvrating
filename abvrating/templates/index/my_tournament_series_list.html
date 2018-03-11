@@ -15,155 +15,159 @@
 		display: flex;"
 >
 
-<div class="col-2 bd-sidebar">
-	<nav id="ts_list" class="navbar navbar-light bg-light">
-		<nav class="flex-column">
-			<button type="button" class="btn btn-link btn-sm"
-					data-toggle="modal" data-target="#create_ts_modal">
-				<span class="text-success">
-					<i class="fas fa-plus"></i>
-					<small>Добавить серию</small>
-				</span>
-			</button>
-			<a class="nav-link" href="#created_ts">
-				Организация
-			</a>
-		{% if ts_dict.0.ts %}
-			<nav class="nav nav-pills flex-column">
-			{% for ts in ts_dict.0.ts %}
-				<small><a class="nav-link ml-3" href="#created_ts_{{ ts.id }}">
-					{{ ts.title }}
-				</a></small>
-			{% endfor %}
+	<div class="col-2 bd-sidebar">
+		<nav id="ts_list" class="navbar navbar-light bg-light">
+			<nav class="flex-column">
+				<button type="button" class="btn btn-link btn-sm"
+						data-toggle="modal" data-target="#create_ts_modal">
+					<span class="text-success">
+						<i class="fas fa-plus"></i>
+						<small>Добавить серию</small>
+					</span>
+				</button>
+				<a class="nav-link" href="#created_ts">
+					Организация
+				</a>
+			{% if ts_dict.0.ts %}
+				<nav class="nav nav-pills flex-column">
+				{% for ts in ts_dict.0.ts %}
+					<small><a class="nav-link ml-3" href="#created_ts_{{ ts.id }}">
+						{{ ts.title }}
+					</a></small>
+				{% endfor %}
+				</nav>
+			{% endif %}
+				<a class="nav-link" href="#played_ts">
+					Участие
+				</a>
+			{% if ts_dict.1.ts %}
+				<nav class="nav nav-pills flex-column">
+				{% for ts in ts_dict.1.ts %}
+					<small><a class="nav-link ml-3" href="#played_ts_{{ ts.id }}">
+						{{ ts.title }}
+					</a></small>
+				{% endfor %}
+				</nav>
+			{% endif %}
 			</nav>
-		{% endif %}
-			<a class="nav-link" href="#played_ts">
-				Участие
-			</a>
-		{% if ts_dict.1.ts %}
-			<nav class="nav nav-pills flex-column">
-			{% for ts in ts_dict.1.ts %}
-				<small><a class="nav-link ml-3" href="#played_ts_{{ ts.id }}">
-					{{ ts.title }}
-				</a></small>
-			{% endfor %}
-			</nav>
-		{% endif %}
 		</nav>
-	</nav>
-</div>
+	</div>
 
-<div class="row col-10">
-{% for dict in ts_dict %}
-	<div class="col-12 row" id="played_ts">
-		<div class="col-12 alert alert-primary" role="alert">
-			{{ dict.label }}
-		</div>
-	{% if not dict.ts %}
-		<div class="alert alert-warning" role="alert">
-			Турниров нет
-		</div>
-	{% else %}
-	{% for ts in dict.ts %}
-		<div class="card-group col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4"
-			 style="margin: 0px 0px 20px 0px"
-			 id="{{ dict.type }}_ts_{{ ts.id }}">
-			{% include './ts_card.html' %}
+	<div class="row col-10">
+	{% for dict in ts_dict %}
+		<div class="col-12 row" id="played_ts">
+			<div class="col-12 alert alert-primary" role="alert">
+				{{ dict.label }}
+			</div>
+		{% if not dict.ts %}
+			<div class="alert alert-warning" role="alert">
+				Турниров нет
+			</div>
+		{% else %}
+		{% for ts in dict.ts %}
+			<div class="card-group col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4"
+				 style="margin: 0px 0px 20px 0px"
+				 id="{{ dict.type }}_ts_{{ ts.id }}">
+				{% include './ts_card.html' %}
+			</div>
+		{% endfor %}
+		{% endif %}
 		</div>
 	{% endfor %}
-	{% endif %}
-	</div>
-{% endfor %}
 
-<form method="post" action="." class="row" 
-	  enctype="multipart/form-data" id="create_ts_form">
-	{% csrf_token %}
-	<div class="modal fade" id="create_ts_modal" tabindex="-1" role="dialog" 
-		 aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" 
-							data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-				{% for field in form %}
-					<div class="form-row">	
-					{% if field is form.organization %}
-						<div class="form-control
-									{% if field.errors %}is-invalid{% endif %}" 
-							 style="margin-top: 10px">
-							<label for="{{ field.id_for_label }}">
-								{{ field.label }}: 
-							</label>
-							<select id="{{ field.id_for_label }}" form="create_ts_form"
-									name="{{ field.html_name }}" required>
-							{% for choice in field.field.choices %}
-								<option value="{{ choice.0 }}"
-									{% if field.value == choice.0  %}
-										selected
-									{% endif %}
-										>
-									{{ choice.1 }}
-								</option>
-							{% endfor %}
-							</select>
-						</div>
-					{% elif field is form.description %}
-						<textarea form="create_ts_form" name="description" 
-								  placeholder="{{ field.label }}"
-								  required="" 
-								  class="form-control 
-										 {% if field.errors %}is-invalid{% endif %}"
-								  style="margin-top: 10px"></textarea>
-					{% elif field is form.icon %}
-						<input type="{{ field.field.widget.input_type }}" 
-							   name="{{ field.html_name }}" 
-							   placeholder="{{ field.label}}" 
-							   class="form-control-file
-									  {% if field.errors %}is-invalid{% endif %}" 
-							   id="{{ field.id_for_label }}"
-							   style="margin-top: 10px">
-					{% else %}
-						<input type="{{ field.field.widget.input_type }}" 
-							   name="{{ field.html_name }}" 
-							   placeholder="{{ field.label}}" 
-							   class="form-control
-									  {% if field.errors %}is-invalid{% endif %}" 
-							   required="True" 
-							   id="{{ field.id_for_label }}"
-							   style="margin-top: 10px">
-					{% endif %}
+	<form method="post" action="." class="row" 
+		  enctype="multipart/form-data" id="create_ts_form">
+		{% csrf_token %}
+		<div class="modal fade" id="create_ts_modal" tabindex="-1" role="dialog" 
+			 aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" 
+								data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+					{% for field in form %}
+						<div class="form-row">	
+						{% if field is form.organization %}
+							<div class="form-control
+										{% if field.errors %}is-invalid{% endif %}" 
+								 style="margin-top: 10px">
+								<label for="{{ field.id_for_label }}">
+									{{ field.label }}: 
+								</label>
+								<select id="{{ field.id_for_label }}" 
+										form="create_ts_form"
+										name="{{ field.html_name }}" required>
+								{% for choice in field.field.choices %}
+									<option value="{{ choice.0 }}"
+										{% if field.value == choice.0  %}
+											selected
+										{% endif %}
+											>
+										{{ choice.1 }}
+									</option>
+								{% endfor %}
+								</select>
+							</div>
+						{% elif field is form.description %}
+							<textarea form="create_ts_form" name="description" 
+									  placeholder="{{ field.label }}"
+									  required="" 
+									  class="form-control 
+										{% if field.errors %}
+											 is-invalid
+										{% endif %}"
+									  style="margin-top: 10px"></textarea>
+						{% elif field is form.icon %}
+							<input type="{{ field.field.widget.input_type }}" 
+								   name="{{ field.html_name }}" 
+								   placeholder="{{ field.label}}" 
+								   class="form-control-file
+										  {% if field.errors %}is-invalid{% endif %}" 
+								   id="{{ field.id_for_label }}"
+								   style="margin-top: 10px">
+						{% else %}
+							<input type="{{ field.field.widget.input_type }}" 
+								   name="{{ field.html_name }}" 
+								   placeholder="{{ field.label}}" 
+								   class="form-control
+										  {% if field.errors %}is-invalid{% endif %}" 
+								   required="True" 
+								   id="{{ field.id_for_label }}"
+								   style="margin-top: 10px">
+						{% endif %}
 
-					{% if field.errors %}
-					{% for error in field.errors %}
-						<div class="invalid-feedback">
-							{{ error }}
+						{% if field.errors %}
+						{% for error in field.errors %}
+							<div class="invalid-feedback">
+								{{ error }}
+							</div>
+						{% endfor %}
+						{% endif %}
 						</div>
 					{% endfor %}
-					{% endif %}
 					</div>
-				{% endfor %}
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" 
-							data-dismiss="modal">
-						Отмена
-					</button>
-					<input type="submit" class="btn btn-primary" value="Добавить"/>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" 
+								data-dismiss="modal">
+							Отмена
+						</button>
+						<input type="submit" class="btn btn-primary" value="Добавить"/>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-</form>
+	</form>
 
-<!-- show tooltips -->
-<script>
-	$(function () {
-		$('[data-toggle="tooltip"]').tooltip();
-	});
-</script>
+	<!-- show tooltips -->
+	<script>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+	</script>
 
+</div>
 {% endblock %}

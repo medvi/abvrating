@@ -14,7 +14,7 @@ class Participant(models.Model):
 	)
 
 	name = models.CharField(
-		max_length = 30, db_column='Name', 
+		max_length=30, db_column='Name', 
 		verbose_name='Имя', db_index=True
 	)
 

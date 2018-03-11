@@ -7,6 +7,18 @@
 
 {% block content %}
 <div class="col-md-12" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
+	<div class="row col-md-12">
+	{% with tdt=tournaments.0.tournament_start_date %}
+	{% with month=tdt|date:"m" year=tdt|date:"Y" %}
+		{% include './ts_detail_calendar.html' with month=month|add:"0" year=year %}
+		{% include './ts_detail_calendar.html' with month=month|add:"1" year=year %}
+		{% include './ts_detail_calendar.html' with month=month|add:"2" year=year %}
+	{% endwith %}
+	{% endwith %}
+	</div>
+</div>
+
+<!--<div class="col-md-12" style="margin: 50px 0px 0px 0px; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;">
 	<div class="col-md-12">
 		{% for t in tournaments %}
 			<div class="container border border-primary rounded-top" 
@@ -54,5 +66,5 @@
 			</div>
 		{% endfor %}
 	</div>
-</div>
+</div>-->
 {% endblock %}

@@ -4,6 +4,7 @@ from django.contrib.auth.views import login
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import FormView
+from django.contrib.auth.decorators import login_required
 
 from index.forms import *
 from index.models import *
@@ -30,6 +31,7 @@ def tournament_series_list(request):
 	return render(request, 'index/tournament_series_list.html', context)
 
 
+@login_required
 def my_tournament_series_list(request):
 	form = TournamentSeriesForm(
 		request.POST or None,
@@ -76,6 +78,12 @@ def my_tournament_series_list(request):
 
 
 def ts_edit(request, ts_id):
+	org = Organization.objects.get(users=request.user)
+	if not TournamentSeries.objects.filter(
+		organization=org, id=ts_id
+	).exists():
+		return render(request, 'error403.html')
+
 	updated_ts = get_object_or_404(TournamentSeries, id=ts_id)
 
 	form = TournamentSeriesForm(
@@ -116,8 +124,11 @@ def tournament_series_detail(request, tournament_series_id):
 	tournaments_list = \
 		Tournament.objects.filter(tournament_series_id=tournament_series_id)
 
+	sort_tournaments_list = \
+		tournaments_list.extra(order_by=['tournament_start_date'])
+
 	context = {
-		'tournaments': tournaments_list,
+		'tournaments': sort_tournaments_list,
 	}
 	return render(request, 'index/tournament_series_detail.html', context)
 

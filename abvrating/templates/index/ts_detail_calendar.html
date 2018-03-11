@@ -1,0 +1,109 @@
+<div class="col-4">
+	<table class="table table-bordered table-sm" id="calendar_{{ month }}{{ year }}">
+		<thead class="thead-light">
+			<tr>
+				<th scope="col" colspan="7" class="text-center" 
+					id="th_{{ month }}{{ year }}">
+					<script>
+						var months = [
+							"Январь", "Февраль",
+							"Март", "Апрель",
+							"Май", "Июнь",
+							"Июль", "Август",
+							"Сентябрь", "Октябрь",
+							"Ноябрь", "Декабрь"
+						]
+						var id = "th_{{ month }}{{ year }}";
+						document.getElementById(id).innerHTML = 
+							months[{{ month }}] + ", {{ year }}";
+					</script>
+				</th>
+			</tr>
+			<tr>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Пн</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Вт</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Ср</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Чт</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Пт</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Сб</small>
+				</td>
+				<td scope="col" style="padding:2px;" class="text-center">
+					<small>Вс</small>
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<script>
+		// создается календарь (ячейки таблицы)
+		var day_of_week = new Date("{{ year }}-{{ month }}-1")
+			.getDay() - 1; // 0 - Sunday, 1 - Monday, ...
+		day_of_week = (day_of_week + 7) % 7;
+
+		var days_in_month = new Date({{ year }}, {{ month }}, 0).getDate();
+		var calendar_table = $("#calendar_{{ month }}{{ year }} > tbody");
+
+		var days = 0;
+		for (var week = 0; week < 6; week++) {
+			var tr = document.createElement("tr");
+
+			for (var day = 0; day < day_of_week; day++) {
+				var td = document.createElement("td");
+				tr.append(td);
+			}
+
+			for (var day = day_of_week; day < 7; day++) {
+				if (days < days_in_month) {	
+					var td = document.createElement("td");
+					td.classList.add("text-center");
+					td.id = "day_" + (days+1).toString() + 
+							 ({{ month }}).toString() + 
+							 ({{ year }}).toString();
+
+					var btn = document.createElement("button");
+					btn.classList.add("col-12");
+					btn.classList.add("text-center");
+					btn.classList.add("btn");
+					btn.classList.add("btn-sm");
+					btn.classList.add("btn-light");
+					btn.textContent = days+1;
+					td.append(btn);
+					tr.append(td);
+					days++;
+				}
+			}
+
+			day_of_week = 0;
+			calendar_table.append(tr);
+		}
+
+		// добавляются изображения турниров на календарь
+		var img = document.createElement("img");
+		img.style.width = "30px";
+		img.style.height = "30px";
+
+	{% for t in tournaments %}
+	{% with t_date=t.tournament_start_date %}
+		var clone_img = img.cloneNode(true);
+		clone_img.src = "{{ t.icon.url }}";
+		var td_id = "#day_" + {{ t_date|date:"d" }} + 
+					{{ t_date|date:"m" }} + 
+					{{ t_date|date:"Y" }}
+		$(td_id + " > *").remove();
+		$(td_id).append(clone_img);
+	{% endwith %}
+	{% endfor %}
+	</script>
+</div>
