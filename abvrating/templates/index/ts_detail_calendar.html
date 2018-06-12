@@ -1,22 +1,23 @@
-<div class="col-4">
-	<table class="table table-bordered table-sm" id="calendar_{{ month }}{{ year }}">
+<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-4">
+	<table class="table table-bordered table-sm" id="calendar_{{ mXy }}">
 		<thead class="thead-light">
 			<tr>
 				<th scope="col" colspan="7" class="text-center" 
-					id="th_{{ month }}{{ year }}">
+					id="th_{{ mXy }}">
 					<script>
 						var months = [
-							"",
 							"Январь", "Февраль",
 							"Март", "Апрель",
 							"Май", "Июнь",
 							"Июль", "Август",
 							"Сентябрь", "Октябрь",
 							"Ноябрь", "Декабрь"
-						]
-						var id = "th_{{ month }}{{ year }}";
+						];
+						var id = "th_{{ mXy }}";
+						var month = {{ mXy }} % 12;
+						var year = Math.floor({{ mXy }} / 12);
 						document.getElementById(id).innerHTML = 
-							months[{{ month }}] + ", {{ year }}";
+							months[month] + ", " + year;
 					</script>
 				</th>
 			</tr>
@@ -37,74 +38,176 @@
 					<small>Пт</small>
 				</td>
 				<td scope="col" style="padding:2px;" class="text-center">
-					<small>Сб</small>
+					<small style="color: red;">Сб</small>
 				</td>
 				<td scope="col" style="padding:2px;" class="text-center">
-					<small>Вс</small>
+					<small style="color: red;">Вс</small>
 				</td>
 			</tr>
 		</thead>
 		<tbody>
 		</tbody>
 	</table>
+	<div style="display: none;" class="new-ref-wrapper-{{ mXy }}">
+		<a class="btn btn-link btn-sm" href="#">
+			Создать
+		</a>
+	</div>
+	<div style="display: none;" class="edit-ref-wrapper-{{ mXy }}">
+		<button class="btn btn-link btn-sm"
+				data-toggle="modal" data-target="#are_you_sure_modal">
+			Удалить
+		</button>
+	</div>
+	<template id="day_template">
+		<td class="text-center">
+			<button type="button"
+					class="col-12 text-center btn btn-sm btn-light"
+					data-contentwrapper=".ref-wrapper" rel="popover">
+		</td>
+	</template>
+	<template id="empty_day_template">
+		<td class="text-center">
+			<div style="width: 30px; height: 30px;"></div>
+		</td>
+	</template>
+	<template id="t_img_template">
+		<div href="#">
+			<img style="width: 30px; height: 30px;"
+				 data-contentwrapper=".ref-wrapper" rel="popover"
+				 onclick="tournament_click($(this).parent().parent())">
+		</div>
+	</template>
 	<script>
+		function tournament_click(td) {
+			var t_delete_form = document.getElementById("t_delete_form");
+			var i = td.attr('tournament-id').indexOf("_") + 1;
+			var tid = td.attr('tournament-id').substring(i);
+			t_delete_form.action = 
+				"{% url 't_delete' ts_id=ts_id t_id=123456789 %}"
+				.replace("123456789", tid);
+		}
+	</script>
+	<script>
+		// заполняет начало строчки нулями, если надо
+		function zero_fill(number, width) {
+			width -= number.toString().length;
+			if (width > 0) {
+				return new Array(width + (/\./.test(number) ? 2 : 1))
+					.join('0') + number;
+			}
+		return number + "";
+		}
+
 		// создается календарь (ячейки таблицы)
-		var day_of_week = new Date("{{ year }}-{{ month }}-1")
+		var month = {{ mXy }} % 12 + 1;
+		var year = Math.floor({{ mXy }} / 12);
+		var day_of_week = new Date(year + "-" + month + "-1")
 			.getDay() - 1; // 0 - Sunday, 1 - Monday, ...
 		day_of_week = (day_of_week + 7) % 7;
 
-		var days_in_month = new Date({{ year }}, {{ month }}, 0).getDate();
-		var calendar_table = $("#calendar_{{ month }}{{ year }} > tbody");
+		var days_in_month = new Date(year, month, 0).getDate();
+		var calendar_table = $("#calendar_{{ mXy }} > tbody");
+		var day_template = document.querySelector("#day_template").content;
+		var empty_day_template = 
+			document.querySelector("#empty_day_template").content;
 
 		var days = 0;
 		for (var week = 0; week < 6; week++) {
-			var tr = document.createElement("tr");
+			var week_tr = document.createElement("tr");
 
 			for (var day = 0; day < day_of_week; day++) {
-				var td = document.createElement("td");
-				tr.append(td);
+				var clone_day = empty_day_template.cloneNode(true);
+				week_tr.appendChild(clone_day);
 			}
 
 			for (var day = day_of_week; day < 7; day++) {
 				if (days < days_in_month) {	
-					var td = document.createElement("td");
-					td.classList.add("text-center");
-					td.id = "day_" + (days+1).toString() + 
-							 ({{ month }}).toString() + 
-							 ({{ year }}).toString();
+					var clone_day_df = day_template.cloneNode(true);
+					var clone_day = clone_day_df.firstElementChild;
+					var t_id_attr = document.createAttribute("tournament-id");
+					t_id_attr.value = "";
+					clone_day.setAttributeNode(t_id_attr);
 
-					var btn = document.createElement("button");
-					btn.classList.add("col-12");
-					btn.classList.add("text-center");
-					btn.classList.add("btn");
-					btn.classList.add("btn-sm");
-					btn.classList.add("btn-light");
-					btn.textContent = days+1;
-					td.append(btn);
-					tr.append(td);
+					var td_id = "day_" + zero_fill(year, 4) + 
+								zero_fill(month, 2) + zero_fill(days+1, 2);
+					clone_day.id = td_id;
+
+					clone_day.firstElementChild.textContent = days+1;
+					var day_td = week_tr.appendChild(clone_day);
 					days++;
+				}
+				else {
+					// создать пустые клетки в таблице 
+					// для одинаковой высоты таблицы
+					var clone_day = empty_day_template.cloneNode(true);
+					week_tr.appendChild(clone_day);
 				}
 			}
 
 			day_of_week = 0;
-			calendar_table.append(tr);
+			calendar_table.append(week_tr);
 		}
 
 		// добавляются изображения турниров на календарь
-		var img = document.createElement("img");
-		img.style.width = "30px";
-		img.style.height = "30px";
+		var ref_img = document.querySelector("#t_img_template").content;
+		var clone_ref;
+		var td_id;
 
 	{% for t in tournaments %}
 	{% with t_date=t.tournament_start_date %}
-		var clone_img = img.cloneNode(true);
-		clone_img.src = "{{ t.icon.url }}";
-		var td_id = "#day_" + {{ t_date|date:"d" }} + 
-					{{ t_date|date:"m" }} + 
-					{{ t_date|date:"Y" }}
+		clone_ref = ref_img.cloneNode(true).firstElementChild;
+		clone_ref.firstElementChild.src = "{% if t.icon %}{{ t.icon.url }}{% else %}/media/uploads/ts_default_icon.jpg{% endif %}"
+		td_id = "#day_" + zero_fill({{ t_date|date:"Y" }}, 4) + 
+					zero_fill({{ t_date|date:"m" }}, 2) + 
+					zero_fill({{ t_date|date:"d" }}, 2)
+		$(td_id).attr("tournament-id", "tid_{{ t.id }}");
 		$(td_id + " > *").remove();
-		$(td_id).append(clone_img);
+		$(td_id).append(clone_ref);
 	{% endwith %}
 	{% endfor %}
 	</script>
+	<script>
+		$(function () {
+			$('[rel=popover]').popover({
+				html: true,
+				placement: 'bottom',
+				content: function(){
+					var inner_html = "";
+					var ref_wrapper = null;
+					if ($(this).prop('tagName') == "BUTTON") {
+						td_id = $(this).parent().attr('id');
+						var i = td_id.indexOf("_") + 1;
+						var tid = td_id.substring(i);
+						ref_wrapper = document
+							.getElementsByClassName("new-ref-wrapper-{{ mXy }}")[0];
+						inner_html = 
+							"{% url 't_create' ts_id=123456789 sdate=99999999 %}";
+						ref_wrapper.firstElementChild.href = 
+							inner_html.replace("123456789", "{{ ts_id }}")
+							.replace("99999999", tid);
+					}
+					else {
+						ref_wrapper = document
+							.getElementsByClassName("edit-ref-wrapper-{{ mXy }}")[0];
+						inner_html = 
+							"{% url 't_delete' ts_id=123456789 t_id=99999999 %}";
+						ref_wrapper.firstElementChild.href = 
+							inner_html.replace("123456789", "{{ ts_id }}")
+							.replace("99999999", "100");
+					}
+					return $(ref_wrapper).html();
+				}
+			});
+			//$('[data-toggle="popover"]').popover();
+		})
+
+		$("body").on("click", function (e) {
+			if ($(e.target).data("toggle") !== "popover" &&
+				$(e.target).parents(".popover.in").length === 0) { 
+				$('[data-toggle="popover"]').popover("hide");
+			}
+		});
+	</script>
 </div>
+

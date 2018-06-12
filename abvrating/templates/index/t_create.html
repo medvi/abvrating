@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Мои турниры
+{% endblock %}
+
+{% block content %}
+<div class="col-2" style="margin-top: 50px;">
+	<a href="{% url 'ts_detail' ts_id=ts_id %}" 
+	   class="text-left">
+		Вернуться
+	</a>
+</div>
+<div class="col-9 row" 
+	 style="margin-top: 40px;">
+	<form method="post" action="{% url 't_create' ts_id=ts_id sdate=sdate %}"
+		  class="row col-12" enctype="multipart/form-data" id="create_t_form">
+	{% csrf_token %}
+
+		<div class="col-8">
+		{% with priority=form.priority t_end_date=form.t_end_date %}
+			<input type="{{ priority.field.widget.input_type }}" 
+				   name="{{ priority.html_name }}" 
+				   placeholder="{{ priority.label }}" 
+				   class="form-control 
+						  {% if priority.errors %}is-invalid{% endif %}" 
+				   required="" id="{{ priority.id_for_label }}"
+				   style="margin-top: 10px"
+				   value="">
+		{% for error in priority.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<input type="{{ t_end_date.field.widget.input_type }}" 
+				   name="{{ t_end_date.html_name }}" 
+				   placeholder="{{ t_end_date.label }}" 
+				   class="form-control 
+						  {% if t_end_date.errors %}is-invalid{% endif %}" 
+				   required="" id="{{ t_end_date.id_for_label }}"
+				   style="margin-top: 10px"
+				   value="{{ t_end_date.value|date:'d.m.y' }}">
+		{% for error in t_end_date.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			<div class="text-center" style="margin-top: 10px">
+				<input type="submit" class="btn btn-primary col-12" 
+					   value="Добавить"/>
+			</div>
+		</div>
+		{% endwith %}
+		<div class="col-4" style="margin-top: 10px;">
+			<div class="col-12 border border-primary" style="padding: 0px">
+				<img src="
+						{% if t.icon %}
+							{{ t.icon.url }}
+						{% else %}
+							/media/uploads/ts_default_icon.jpg
+						{% endif %}" 
+					 style="width: 100%;"
+					 class="" id="icon_img">
+				</img>
+				<small>
+				<input type="file" accept="image/png, image/jpeg, image/gif" 
+					   name="icon" id="icon_input" 
+					   class="form-control-file border-0"/>
+				</small>
+		{% for error in form.icon.errors %}
+			<div class="invalid-feedback">
+				{{ error }}
+			</div>
+		{% endfor %}
+
+			</div>
+		</div>
+
+	</form>
+</div>
+
+<!--<script>
+function getCookie(c_name) {
+	if (document.cookie.length > 0) {
+		c_start = document.cookie.indexOf(c_name + "=");
+		if (c_start != -1) {
+			c_start = c_start + c_name.length + 1;
+			c_end = document.cookie.indexOf(";", c_start);
+			if (c_end == -1) c_end = document.cookie.length;
+			return unescape(document.cookie.substring(c_start,c_end));
+		}
+	}
+	return "";
+}
+
+$("#icon_input").change(function uploadImagePreview(e) {
+	var blobFile = e.target.files[0];
+	var formData = new FormData();
+	formData.append("icon", blobFile);
+
+	$.ajaxSetup({
+		headers: { "X-CSRFToken": getCookie("csrftoken") },
+	});
+
+	$.ajax({
+!!!!!!!		url: "{ url 'ts_edit' ts_id=ts.id }",!!!!!!!!
+		type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(response) {
+			$("#icon_img").attr('src', "/media/uploads/" + blobFile.name);
+		},
+		error: function(jqXHR, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+});
+</script>-->
+
+{% endblock %}

@@ -77,7 +77,7 @@
 						  {% if ts_start_date.errors %}is-invalid{% endif %}" 
 				   required="" id="{{ ts_start_date.id_for_label }}"
 				   style="margin-top: 10px"
-				   value="{{ ts_start_date.value|date:"d.m.Y" }}">
+				   value="{{ ts_start_date.value|date:"d.m.y" }}">
 		{% for error in ts_start_date.errors %}
 			<div class="invalid-feedback">
 				{{ error }}
@@ -91,7 +91,7 @@
 						  {% if ts_end_date.errors %}is-invalid{% endif %}" 
 				   required="" id="{{ ts_end_date.id_for_label }}"
 				   style="margin-top: 10px"
-				   value="{{ ts_end_date.value|date:"d.m.Y" }}">
+				   value="{{ ts_end_date.value|date:"d.m.y" }}">
 		{% for error in ts_end_date.errors %}
 			<div class="invalid-feedback">
 				{{ error }}
@@ -100,7 +100,7 @@
 
 			<div class="text-center" style="margin-top: 10px">
 				<input type="submit" class="btn btn-primary col-12" 
-					   value="Обновить"/>
+					   value="обновить"/>
 			</div>
 		</div>
 		{% endwith %}
@@ -148,7 +148,6 @@ function getCookie(c_name) {
 
 $("#icon_input").change(function uploadImagePreview(e) {
 	var blobFile = e.target.files[0];
-	console.log(blobFile.name);
 	var formData = new FormData();
 	formData.append("icon", blobFile);
 
@@ -163,7 +162,6 @@ $("#icon_input").change(function uploadImagePreview(e) {
 		processData: false,
 		contentType: false,
 		success: function(response) {
-			console.log(blobFile);
 			$("#icon_img").attr('src', "/media/uploads/" + blobFile.name);
 		},
 		error: function(jqXHR, textStatus, errorMessage) {

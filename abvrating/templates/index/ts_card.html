@@ -1,10 +1,8 @@
 <div class="card">
-	<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}" 
+	<a href="{% url 'ts_detail' ts_id=ts.pk %}" 
 	   class="card-header nav-link text-center"
 	   style="padding: 0.25rem 0.5rem">
-		<p class="h5">
 			{{ ts.title }}
-		</p>
 	</a>
 	<div id="pl_carousel_{{ ts.id }}" class="carousel slide" 
 		 data-ride="carousel">
@@ -15,15 +13,22 @@
 						{{ ts.icon.url }}
 					{% else %}
 						/media/uploads/ts_default_icon.jpg
-					{% endif %}"
+					{% endif %}
+				"
 					 class="card-img-top d-block w-100"
-					 width="295" height="221">
+					 width="295" height="150">
 			</div>
 		{% for t in ts.tournaments.all %}
 			<div class="carousel-item">
-				<img src={{ t.icon.url }}
+				<img src="
+						{% if t.icon %}
+							{{ t.icon.url }}
+						{% else %}
+							/media/uploads/ts_default_icon.jpg
+						{% endif %}
+					" 
 					 class="card-img-top d-block w-100"
-					 width="295" height="221">
+					 width="295" height="150">
 			</div>
 		{% endfor %}
 		</div>
@@ -56,7 +61,7 @@
 	<div class="row card-footer" 
 		 style="padding: 3px 0px; margin-left: 0px; margin-right: 0px">
 		<div class="col-2" style="padding: 2px">
-			<a href="{% url 'ts_detail' tournament_series_id=ts.pk %}"
+			<a href="{% url 'ts_detail' ts_id=ts.pk %}"
 			   class="btn btn-link btn-sm"
 			   data-toggle="tooltip" data-placement="bottom" 
 			   title="Подробнее">

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Серия турниров {{ tournaments.0.tournament_series.title }} 
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12" 
+	 style="
+		margin: 50px 0px 0px 0px; 
+		display: -webkit-box; 
+		display: -webkit-flex; 
+		display: -ms-flexbox; 
+		display: flex;
+	 ">
+	<div class="col-1">
+		<a class="col-6 btn btn-secondary carousel-control-prev"
+		   href="#calendar_carousel" role="button"
+		   data-slide="prev"
+		   style="width: 100%; opacity: 0.2;">
+			<i class="fas fa-angle-left" 
+			   data-fa-transform="grow-40"></i>
+		</a>
+	</div>
+	<div class="col-10 carousel slide"
+		 data-ride="carousel" id="calendar_carousel" data-interval="false"
+		 style="padding: 0px;" data-wrap="false"> 
+		<div class="row">
+			<div class="col-12 carousel-inner">
+				<div class="col-12 carousel-item">
+					<div class="row">
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-7' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-6' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-5' %}
+					</div>
+				</div>
+				<div class="col-12 carousel-item">
+					<div class="row">
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-4' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-3' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-2' %}
+					</div>
+				</div>
+				<div class="col-12 carousel-item active">
+					<div class="row">
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'-1' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'0' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'1' %}
+					</div>
+				</div>
+				<div class="col-12 carousel-item">
+					<div class="row">
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'2' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'3' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'4' %}
+					</div>
+				</div>
+				<div class="col-12 carousel-item">
+					<div class="row">
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'5' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'6' %}
+						{% include './ts_detail_calendar.html' with mXy=mXy|add:'7' %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-1">
+		<a class="offset-6 col-6 btn btn-secondary carousel-control-next"
+		   href="#calendar_carousel" role="button"
+		   data-slide="next" style="width: 100%; opacity: 0.20;">
+			<i class="fas fa-angle-right" 
+			   data-fa-transform="grow-40"></i>
+		</a>
+	</div>
+</div>
+
+<div class="modal fade" id="are_you_sure_modal" 
+	 tabindex="-1" role="dialog" 
+	 aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-7">
+							Вы уверены, что хотите удалить турнир?
+						</div>
+						<form method="post" class="row col-5"
+							  action="#"
+							  id="t_delete_form" 
+							  style="padding-right: 0px; margin-bottom: 0px;">
+							{% csrf_token %}
+							<button type="button" 
+									class="btn btn-secondary col-5 offset-1"
+									data-dismiss="modal">
+								Нет
+							</button>
+							<input type="submit" 
+								   class="btn btn-primary col-5 offset-1"
+								   value="Да">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

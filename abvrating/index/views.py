@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.views import login
@@ -5,9 +7,16 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.views.generic.base import View
 
 from index.forms import *
 from index.models import *
+
+
+def multiply(value, arg):
+    return value*arg
 
 
 def index(request):
@@ -16,7 +25,9 @@ def index(request):
 
 def tournament_series_list(request):
 	tournament_series_list = TournamentSeries.objects.all()
-	paginator = Paginator(tournament_series_list, 24)
+	sort_ts_list = \
+		tournament_series_list.extra(order_by=['id'])
+	paginator = Paginator(sort_ts_list, 24)
 
 	page = request.GET.get('page')
 	try:
@@ -28,7 +39,7 @@ def tournament_series_list(request):
 		'tseries': tournament_series,
 		'num_pages': paginator.page_range,
 	}
-	return render(request, 'index/tournament_series_list.html', context)
+	return render(request, 'index/ts_list.html', context)
 
 
 @login_required
@@ -74,7 +85,7 @@ def my_tournament_series_list(request):
 		"form": form,
 	}
 
-	return render(request, 'index/my_tournament_series_list.html', context)
+	return render(request, 'index/my_ts_list.html', context)
 
 
 def ts_edit(request, ts_id):
@@ -120,17 +131,22 @@ def ts_delete(request, ts_id):
 	return render(request, 'index/ts_delete', context)
 
 
-def tournament_series_detail(request, tournament_series_id):
+def tournament_series_detail(request, ts_id):
 	tournaments_list = \
-		Tournament.objects.filter(tournament_series_id=tournament_series_id)
+		Tournament.objects.filter(tournament_series_id=ts_id)
 
 	sort_tournaments_list = \
 		tournaments_list.extra(order_by=['tournament_start_date'])
 
+	today = datetime.datetime.now()
+
 	context = {
 		'tournaments': sort_tournaments_list,
+		'mXy': 12*today.year + (today.month-1),
+		'ts_id': ts_id,
 	}
-	return render(request, 'index/tournament_series_detail.html', context)
+
+	return render(request, 'index/ts_detail.html', context)
 
 def tournament_detail(request, tournament_series_id, tournament_id):
 	tournament = Tournament.objects.filter(
@@ -141,7 +157,7 @@ def tournament_detail(request, tournament_series_id, tournament_id):
 	context = {
 		'tournament': tournament,
 	}
-	return render(request, 'index/tournament_detail.html', context)
+	return render(request, 'index/t_detail.html', context)
 
 
 def ts_rating_detail(request, ts_rating_id):
@@ -247,3 +263,71 @@ def register_step3(request):
 	}
 
 	return render(request, 'registration/register3.html', context)
+
+
+class TournamentCreate(View):
+	def get(self, request, ts_id, sdate):
+		form = TournamentForm()
+
+		context = {
+			'form': form,
+			'ts_id': ts_id,
+			'sdate': sdate,
+		}
+
+		return render(request, 'index/t_create.html', context)
+
+	def post(self, request, ts_id, sdate):
+		form = TournamentForm(
+			request.POST or None,
+			request.FILES or None,
+		)
+
+		if form.is_valid():
+			print(form)
+			tournaments_list = \
+				Tournament.objects.filter(tournament_series_id=ts_id)
+
+			sort_tournaments_list = \
+				tournaments_list.extra(order_by=['tournament_start_date'])
+
+			max_serial_number = \
+				max(tournaments_list.values_list('serial_number', flat=True), default=1)
+
+			t = Tournament.objects.create(
+				tournament_series_id=ts_id,
+				serial_number=max_serial_number+1,
+				priority=form.cleaned_data['priority'],
+				tournament_start_date='-'.join([sdate[0:4], sdate[4:6], sdate[6:8]]),
+				tournament_end_date=form.cleaned_data['t_end_date'],
+				icon=form.cleaned_data['icon'],
+			)
+
+			today = datetime.datetime.now()
+
+			context = {
+				'ts_id': ts_id,
+				'tournaments': sort_tournaments_list,
+				'mXy': 12*today.year + (today.month-1),
+				'form': form,
+			}
+
+			return render(request, 'index/ts_detail.html', context)
+
+		context= {
+			'form': form,
+			'ts_id': ts_id,
+			'sdate': sdate,
+		}
+
+		return render(request, 'index/t_create.html', context)
+
+
+class TournamentDelete(DeleteView):
+	model = Tournament
+	succes_url = reverse_lazy('ts_detail')
+	pk_url_kwarg = 't_id'
+
+	def get_success_url(self):
+		ts = self.object.tournament_series 
+		return reverse_lazy('ts_detail', kwargs={'ts_id': ts.id})

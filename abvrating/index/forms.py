@@ -186,3 +186,47 @@ class TournamentSeriesForm(forms.ModelForm):
 			'title', 'description', 'organization', 
 			'ts_start_date', 'ts_end_date', 'icon',
 		)
+
+
+class TournamentForm(forms.ModelForm):
+	priority = forms.IntegerField(
+		label='Приоритет'
+	)
+
+#	t_start_date = forms.DateField(
+#		widget=AdminDateWidget,
+#		label='Дата начала турнира (дд.мм.гггг)',
+#		input_formats=[
+#			'%Y-%m-%d',
+#			'%m/%d/%Y',
+#			'%m/%d/%Y',
+#			'%d.%m.%Y'
+#		] 
+#	)
+
+	t_end_date = forms.DateField(
+		widget=AdminDateWidget,
+		label='Дата окончания турнира (дд.мм.гггг)',
+		input_formats=[
+			'%Y-%m-%d',
+			'%m/%d/%Y',
+			'%m/%d/%Y',
+			'%d.%m.%Y'
+		] 
+	)
+
+	icon = forms.ImageField(
+		label='Иконка',
+		required=False
+	)
+
+	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user', None)
+		super(TournamentForm,  self).__init__(*args, **kwargs)
+
+	class Meta:	
+		model = Tournament
+		fields = (
+			'priority',	't_end_date', 'icon',
+		)
+

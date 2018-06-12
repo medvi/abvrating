@@ -15,65 +15,74 @@
 		display: flex;"
 >
 
-	<div class="col-2 bd-sidebar">
-		<nav id="ts_list" class="navbar navbar-light bg-light">
-			<nav class="flex-column">
-				<button type="button" class="btn btn-link btn-sm"
-						data-toggle="modal" data-target="#create_ts_modal">
-					<span class="text-success">
-						<i class="fas fa-plus"></i>
-						<small>Добавить серию</small>
-					</span>
-				</button>
-				<a class="nav-link" href="#created_ts">
-					Организация
-				</a>
-			{% if ts_dict.0.ts %}
-				<nav class="nav nav-pills flex-column">
-				{% for ts in ts_dict.0.ts %}
-					<small><a class="nav-link ml-3" href="#created_ts_{{ ts.id }}">
-						{{ ts.title }}
-					</a></small>
-				{% endfor %}
-				</nav>
-			{% endif %}
-				<a class="nav-link" href="#played_ts">
-					Участие
-				</a>
-			{% if ts_dict.1.ts %}
-				<nav class="nav nav-pills flex-column">
-				{% for ts in ts_dict.1.ts %}
-					<small><a class="nav-link ml-3" href="#played_ts_{{ ts.id }}">
-						{{ ts.title }}
-					</a></small>
-				{% endfor %}
-				</nav>
-			{% endif %}
-			</nav>
-		</nav>
-	</div>
+<div class="col-12">
+	<button type="button" class="btn btn-link btn-sm"
+			style="margin: 0px 0px 20px 0px"
+			data-target="#create_ts_modal"
+			data-toggle="modal" >
+		<span class="text-success">
+			<i class="fas fa-plus"></i>
+			<small>Добавить серию</small>
+		</span>
+	</button>
+</div>
 
-	<div class="row col-10">
-	{% for dict in ts_dict %}
-		<div class="col-12 row" id="played_ts">
-			<div class="col-12 alert alert-primary" role="alert">
+{% for dict in ts_dict %}
+	{% if dict.type == "created" %}
+		<div class="col-12 dropdown">
+			<button class="col-12 btn btn-primary btn-sm dropdown-toggle" 
+					type="button" id="organizationDropdown" 
+					data-toggle="dropdown" aria-haspopup="true" 
+					aria-expanded="false">
 				{{ dict.label }}
-			</div>
-		{% if not dict.ts %}
-			<div class="alert alert-warning" role="alert">
-				Турниров нет
-			</div>
-		{% else %}
+			</button>
+		{% if ts_dict.0.ts %}
+			<ul class="dropdown-menu" role="menu"
+				 aria-labelledby="organizationDropdown">
+			{% for ts in ts_dict.0.ts %}
+				<li><small><a class="nav-link ml-3 dropdown-item" 
+						  href="#created_ts_{{ ts.id }}">
+					{{ ts.title }}
+				</a></small></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		</div>
+	{% else  %}
+		<div class="col-12 dropdown">
+			<button class="col-12 btn btn-primary btn-sm dropdown-toggle" 
+					type="button" id="participantDropdown" 
+					data-toggle="dropdown" aria-haspopup="true" 
+					aria-expanded="false">
+				{{ dict.label }}
+			</button>
+		{% if ts_dict.1.ts %}
+			<ul class="dropdown-menu" role="menu"
+				 aria-labelledby="participantDropdown">
+			{% for ts in ts_dict.1.ts %}
+				<li><small><a class="nav-link ml-3 dropdown-item" 
+						  href="#played_ts_{{ ts.id }}">
+					{{ ts.title }}
+				</a></small></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		</div>
+	{% endif %}
+	{% if not dict.ts %}
+		<div class="alert alert-warning" role="alert">
+			Турниров нет
+		</div>
+	{% else %}
 		{% for ts in dict.ts %}
-			<div class="card-group col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4"
-				 style="margin: 0px 0px 20px 0px"
+			<div class="card-group col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2"
+				 style="margin: 20px 0px 20px 0px"
 				 id="{{ dict.type }}_ts_{{ ts.id }}">
 				{% include './ts_card.html' %}
 			</div>
 		{% endfor %}
-		{% endif %}
-		</div>
-	{% endfor %}
+	{% endif %}
+{% endfor %}
 
 	<form method="post" action="." class="row" 
 		  enctype="multipart/form-data" id="create_ts_form">
